@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum Priority {
+  LOW
+  HIGH
+  MEDIUM
+}
+
+enum Status {
+  TODO
+  INPROGRESS
+  DONE
+}
+
+enum ProjectStatus {
+  ACTUVE
+  PLANNING
+  COMPLETED
+  ONHOLED
+  CANCELED
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  password       String?
+  createdAt      DateTime        @default(now())
+  tasks          Task[]
+  leadingTeams   Team[]
+  teamMembers    TeamMember[]
+  projects       Project[]
+  companyMembers CompanyMember[]
+  @@index([email])
+}
+
+model Company {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String
+  createdAt   DateTime  @default(now())
+  teams       Team[]
+  projects    Project[]
+  logo        String?
+  companyMembers CompanyMember[]
+}
+
+model CompanyMember {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  company Company @relation(fields: [companyId], references: [id])
+  companyId String
+  role Role @default(MEMBER)
+  @@index([userId,companyId])
+  @@unique([userId,companyId])
+}
+
+model Team {
+  id          String       @id @default(uuid())
+  name        String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  leader      User         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId      String
+  createdAt   DateTime     @default(now())
+  teamMembers TeamMember[]
+  projects    Project[]
+
+  @@index([companyId])
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  description String
+  company     Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  tasks       Task[]
+  createdAt   DateTime      @default(now())
+  team        Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId      String
+  status      ProjectStatus @default(ACTUVE)
+  startDate   DateTime      @default(now())
+  endDate     DateTime
+  creator     User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId   String
+
+  @@unique([name, teamId])
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId   String
+  priority    Priority @default(MEDIUM)
+  status      Status   @default(TODO)
+  createdAt   DateTime @default(now())
+  dueTime     DateTime
+  assignee    User     @relation(fields: [assigneeId], references: [id], onDelete: Cascade)
+  assigneeId  String
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  userId    String
+  teamId    String
+  role      Role     @default(MEMBER)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, teamId])
+  @@index([teamId])
+}
