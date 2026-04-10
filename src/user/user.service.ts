@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { Payload } from 'utils/interfaces';
+import { Payload } from '../../utils/interfaces';
 
 @Injectable()
 export class UserService {
@@ -41,10 +42,19 @@ export class UserService {
       name:user.name,
       role:user.role
     }
-    const accessToken = await this.jwt.signAsync(payload);
-    return {
-      accessToken
+    try {
+      const accessToken = await this.jwt.signAsync(payload,{
+
+      });
+      return {
+        accessToken
+      }
+    } catch (error:any) {
+      throw new InternalServerErrorException(error.message)
+
+      
     }
+
   }
   public async validateUserToGoogle({email,name}:{email:any,name:any}) {
     const user = await this.prisma.user.findUnique({where:{email }});

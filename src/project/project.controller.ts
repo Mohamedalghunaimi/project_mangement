@@ -3,9 +3,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Pars
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { JwtGuard } from 'src/user/gurards/jwt.guard';
+import { JwtGuard } from '../user/gurards/jwt.guard';
 import express from 'express';
 import { Payload } from 'utils/interfaces';
+import { ApiSecurity } from '@nestjs/swagger';
 
 @Controller('project')
 @UseGuards(JwtGuard)
@@ -14,6 +15,8 @@ export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
   @Post()
+    @ApiSecurity("bearer")
+
   public async create(@Body() createProjectDto: CreateProjectDto,@Req() req:express.Request) {
     const user = req.user as Payload ;
     const result = await this.projectService.create(createProjectDto,user.id );
@@ -21,6 +24,7 @@ export class ProjectController {
   }
 
   @Get(":companyId")
+
   public async findAll(
     @Param('companyId',new ParseUUIDPipe()) companyId:string
   ) {
@@ -34,12 +38,16 @@ export class ProjectController {
   }
 
   @Patch(':id')
+  @ApiSecurity("bearer")
+
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto,@Req() req:express.Request) {
     const user = req.user as Payload
     return this.projectService.update(id, updateProjectDto,user.id);
   }
 
   @Delete(':id')
+  @ApiSecurity("bearer")
+
   remove(@Param('id') id: string,@Req() req:express.Request) {
     const user = req.user as Payload
 

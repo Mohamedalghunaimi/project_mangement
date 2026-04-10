@@ -15,6 +15,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
+
 @Module({
   imports: [
     PrismaModule,
@@ -28,9 +29,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
       inject:[ConfigService],
       useFactory:(config:ConfigService)=> {
         return {
-          secret:config.get<string>("jwt_secret"),
+          secret:config.get<string>("JWT_SECRET"),
           signOptions:{
-            expiresIn:"7d"
+            expiresIn:"1d"
           }
 
         }
@@ -59,7 +60,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
         fileSize:1024*1024*5
       }
     }),
-    CloudinaryModule
+    CloudinaryModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],

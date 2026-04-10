@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
-import {  Post, Body, Controller, UseGuards, Req, Get, Res } from '@nestjs/common';
+import {  Post, Body, Controller, UseGuards, Req, Get, Res, HttpCode } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LocalGuard } from './gurards/local.guard';
 import express from 'express';
 import { GoogleGuard } from './gurards/google.guard';
 import { Payload } from 'utils/interfaces';
-import { TeamService } from 'src/team/team.service';
+import { TeamService } from '../team/team.service';
 import { User } from '@prisma/client';
 
 @Controller('user')
@@ -20,12 +20,14 @@ export class UserController {
 
   @Post("auth/register")
   public async create(@Body() createUserDto: CreateUserDto) {
+    
     const result = await this.userService.create(createUserDto);
     return result;
   }
 
   @Post("auth/login")
   @UseGuards(LocalGuard)
+  @HttpCode(200)
   public async login(@Req() req:express.Request) {
     const user = req.user as Payload ;
     const result = await this.userService.signUp(user)
@@ -37,7 +39,13 @@ export class UserController {
   public loginWithGoogle(@Req() req:express.Request,@Res() res:express.Response) {
   const inviteToken = req.query.inviteToken;
   if(inviteToken) {
-    res.cookie("inviteToken",inviteToken,{httpOnly:true})
+    res.cookie("inviteToken",inviteToken,{
+      httpOnly:true,
+      secure:true,
+      sameSite:"lax",
+      path:"/",
+      maxAge:1000*60*60
+    })
   }
 
   }

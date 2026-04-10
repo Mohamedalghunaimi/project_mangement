@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { CompanyService } from './company.service';
 import { CompanyController } from './company.controller';
-import { TeamModule } from 'src/team/team.module';
+import { TeamModule } from '../team/team.module';
 import { Module } from '@nestjs/common';
 
 @Module({

@@ -29,6 +29,7 @@ app.use(helmet());
   .addTag('example')
   .setVersion("1.0")
   .addBearerAuth()
+  .addSecurity("bearer",{type:"http",scheme:"bearer"})
   .build()
   const document = SwaggerModule.createDocument(app,config)
   SwaggerModule.setup('api', app, document, {

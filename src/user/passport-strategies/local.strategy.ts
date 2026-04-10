@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import bcrypt from 'bcryptjs';
+
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -12,6 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
     public async validate(email:string,password:string){
         const user = await this.prism.user.findUnique({where:{email}});
+        console.log(user)
         if(!user) {
             throw new UnauthorizedException("invalid inputs")
         }
@@ -21,6 +25,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         }
         user.password = "";
         return user;
+     
+        
+
 
     }
     

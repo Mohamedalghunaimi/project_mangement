@@ -3,9 +3,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete,  ParseUUIDPipe, UseG
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { JwtGuard } from 'src/user/gurards/jwt.guard';
-import { User } from 'src/company/decorators/user.decorator';
-import * as interfaces from 'utils/interfaces';
+import { JwtGuard } from '../user/gurards/jwt.guard';
+import { User } from '../company/decorators/user.decorator';
+import * as interfaces from '../../utils/interfaces';
 
 @Controller('tasks')
 @UseGuards(JwtGuard)

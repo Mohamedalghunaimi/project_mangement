@@ -3,10 +3,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
 import { BadRequestException, ForbiddenException, Injectable, } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompany } from './dtos/CreateCompany.dto';
-import { TeamService } from 'src/team/team.service';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { TeamService } from '../team/team.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import * as fs from 'fs';
 @Injectable()
 export class CompanyService {
