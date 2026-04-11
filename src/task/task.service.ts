@@ -160,7 +160,7 @@ export class TaskService {
       }
     });
     if(!task) {
-      throw new BadRequestException("task not exists");
+      throw new NotFoundException("task not exists");
     }
     const leadId = task.project.team.leadId;
     if(leadId!==userId) {

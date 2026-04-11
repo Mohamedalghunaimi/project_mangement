@@ -397,6 +397,72 @@ let createTaskDto:CreateTaskDto
 
             expect(getTasksForUserResponse.status).toBe(200)
         })
+        it("should return with 401",async()=> {
+            const newTask = await prisma.task.create({
+                data:{
+                    title:"task1",
+                    description:"this is the first task1",
+                    projectId:newProject.id,
+                    priority:"HIGH",
+                    status:"TODO",
+                    dueTime:new Date(Date.now()+1000*60*60),
+                    assigneeId:leader.id
+                },
+                select:{
+                    id:true
+                }
+            })
+            const getTasksForUserResponse = await request(app.getHttpServer())
+            .delete(`/api/tasks/${newTask.id}`)
+
+            expect(getTasksForUserResponse.status).toBe(401)
+        })
+        it("should return with 403",async()=> {
+            const newTask = await prisma.task.create({
+                data:{
+                    title:"task1",
+                    description:"this is the first task1",
+                    projectId:newProject.id,
+                    priority:"HIGH",
+                    status:"TODO",
+                    dueTime:new Date(Date.now()+1000*60*60),
+                    assigneeId:leader.id
+                },
+                select:{
+                    id:true
+                }
+            })
+
+            const payload :Payload = {
+                name:assigneTo.name,
+                id:assigneTo.id
+            }
+            const accessToken = await jwtService.signAsync(payload);
+
+            const getTasksForUserResponse = await request(app.getHttpServer())
+            .delete(`/api/tasks/${newTask.id}`)
+            .set("Authorization",`Bearer ${accessToken}`);
+
+            expect(getTasksForUserResponse.status).toBe(403)
+        })
+        it("should return with 400",async()=> {
+
+
+            const getTasksForUserResponse = await request(app.getHttpServer())
+            .delete(`/api/tasks/${"123456789"}`)
+            .set("Authorization",`Bearer ${accessToken}`);
+
+            expect(getTasksForUserResponse.status).toBe(400)
+        })
+        it("should return with 404",async()=> {
+
+
+            const getTasksForUserResponse = await request(app.getHttpServer())
+            .delete(`/api/tasks/${"d9e44eb5-d0c5-4330-9ec7-e20794f22fa4"}`)
+            .set("Authorization",`Bearer ${accessToken}`);
+
+            expect(getTasksForUserResponse.status).toBe(404)
+        })
     })
 
 

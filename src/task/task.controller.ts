@@ -43,7 +43,7 @@ export class TaskController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string,@User() user:interfaces.Payload) {
+  remove(@Param('id',new ParseUUIDPipe(),) id: string,@User() user:interfaces.Payload) {
     return this.taskService.remove(id,user.id);
   }
 }
