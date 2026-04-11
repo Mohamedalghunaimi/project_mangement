@@ -12,10 +12,10 @@ import * as interfaces from '../../utils/interfaces';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  @Post("/:id")
+  @Post("/:projectId")
   public async create(
     @Body() createTaskDto: CreateTaskDto,
-    @Param("id",new ParseUUIDPipe()) projectId:string,
+    @Param("projectId",new ParseUUIDPipe()) projectId:string,
     @User() user:interfaces.Payload
   ) {
     const newTask = await this.taskService.create(createTaskDto,projectId,user.id);
@@ -23,8 +23,12 @@ export class TaskController {
   }
 
   @Get("/:projectId")
-  findAll(@Param("projectId", new ParseUUIDPipe()) projectId:string) {
-    return this.taskService.findAll(projectId);
+  findAll(
+    @Param("projectId", new ParseUUIDPipe()) projectId:string,
+    @User() user:interfaces.Payload
+
+  ) {
+    return this.taskService.findAll(projectId,user.id);
   }
 
   @Get('')

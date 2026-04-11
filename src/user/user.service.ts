@@ -40,7 +40,6 @@ export class UserService {
     const payload :Payload = {
       id:user.id ,
       name:user.name,
-      role:user.role
     }
     try {
       const accessToken = await this.jwt.signAsync(payload,{

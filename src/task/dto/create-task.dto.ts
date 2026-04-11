@@ -7,7 +7,7 @@ export class CreateTaskDto {
     
     @IsString()
     @IsNotEmpty()
-    @MinLength(25)
+    @MinLength(5)
     title:string
     
 

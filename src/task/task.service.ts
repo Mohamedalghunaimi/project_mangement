@@ -4,11 +4,11 @@
 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable prettier/prettier */
-import { BadRequestException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, HttpException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { Task, TeamMember } from '@prisma/client';
+import { Role, Task, TeamMember } from '@prisma/client';
 
 @Injectable()
 export class TaskService {
@@ -18,25 +18,42 @@ export class TaskService {
 
   }
   public async create(createTaskDto: CreateTaskDto,projectId:string,leader:string):Promise<Task> {
-    const {assigneTo,title,description,priority,status,dueDate} = createTaskDto;
-    const user = await this.prisma.user.findUnique({where:{email:assigneTo}});
+    try {
+  const {assigneTo,title,description,priority,status,dueDate} = createTaskDto;
+    const user = await this.prisma.user.findUnique({where:{email:assigneTo},select:{id:true}});
     if(!user) {
       throw new BadRequestException('member is not exist');
     }
     const project = await this.prisma.project.findUnique({
       where:{id:projectId},
-      include:{
-        team:true
+      select:{
+        id:true,
+        teamId:true,
+        team:{
+          select:{
+            leadId:true
+          }
+        }
       }
     })
     if(!project) {
       throw new BadRequestException("project is not exists")
     }
-    if(String(project.team.leadId) !== leader) {
+    if(project.team.leadId !== leader) {
       throw new UnauthorizedException("only the leader of the team can create new task")
     }
-    const team = await this.prisma.team.findUnique({
-      where:{id:project.teamId },
+    const team = await this.prisma.team.findFirst({
+      where:{
+        id:project.teamId ,
+        teamMembers:{
+          some:{
+            userId:user.id,
+            role:{
+              not:"VIEWER"
+            }
+          }
+        }
+      },
       select:{
         teamMembers:{
           select:{
@@ -48,15 +65,14 @@ export class TaskService {
 
     });
 
-    const teamMembers = team!.teamMembers  ;
-    const memberIsExist = teamMembers.find((member)=> String(member.userId)===String(user.id))
-    if(!memberIsExist) {
-      throw new BadRequestException("member is not exists in the team")
+
+    if(!team) {
+      throw new BadRequestException("User is not a member of this team" )
     }
 
     const newTask = await this.prisma.task.create({
       data:{
-        projectId,
+        projectId:project.id,
         title,
         description,
         priority,
@@ -66,14 +82,38 @@ export class TaskService {
       }
     })
     return newTask
+    } catch (error:any) {
+      if (error instanceof HttpException) {
+        throw error
+      }
+      console.log(error)
+      throw new InternalServerErrorException("some thing went wrong")      
+    }
+  
     
 
 
     
   }
 
-  public async findAll(projectId:string): Promise<Task[]> {
-    const tasks = await this.prisma.task.findMany({where:{projectId}});
+  public async findAll(projectId:string,userId:string): Promise<Task[]> {
+    const existingProject = await this.prisma.project.findFirst({
+      where:{
+        id:projectId,
+        team:{
+          teamMembers:{
+            some:{
+              userId
+            }
+          }
+        }
+      },
+      select:{id:true}
+    })
+    if(!existingProject) {
+      throw new NotFoundException("project not found")
+    }
+    const tasks = await this.prisma.task.findMany({where:{projectId:existingProject.id}});
     return tasks
     
   }
@@ -84,7 +124,7 @@ export class TaskService {
 
     });
     if(!task) {
-      throw new BadRequestException("task not exists")
+      throw new NotFoundException("task not exists")
     }
     if(task.assigneeId!==userId) {
       throw new ForbiddenException("forbidden!")
@@ -134,10 +174,7 @@ export class TaskService {
 
   }
   public async findUserTasks(id:string):Promise<Task[]> {
-    const user = await this.prisma.user.findUnique({where:{id}});
-    if(!user) {
-      throw new BadRequestException("invalid id")
-    }
+
     const tasks = await this.prisma.task.findMany({
       where:{assigneeId:id},
       include:{

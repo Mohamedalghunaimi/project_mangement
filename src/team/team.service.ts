@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
@@ -28,8 +29,9 @@ export class TeamService {
         prismaClient.company.findUnique({where:{id:companyId},select:{id:true}}) ,
         prismaClient.user.findUnique({ where: { id: leadId }, }) 
     ])
+    
     if(!user) {
-      throw new BadRequestException("invalid user id")
+      throw new NotFoundException("invalid user id")
     }
     if(!company) {
       throw new BadRequestException("invalid company id")
@@ -70,6 +72,7 @@ export class TeamService {
       return result ;
 
 
+
     }
 
     public async acceptInvitaion(token:string,googleUser:User) {
@@ -99,10 +102,12 @@ export class TeamService {
         }
       )
       return newUserMember
-      } catch (error) {
-        console.error(error)
-        throw new InternalServerErrorException("invalid token")
-        
+      } catch (error:any) {
+        if (error instanceof HttpException) {
+          throw error
+        }
+        console.log(error)
+        throw new InternalServerErrorException("some thing went wrong in server")        
       }
 
     }

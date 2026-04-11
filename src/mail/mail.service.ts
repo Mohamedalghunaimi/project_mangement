@@ -28,7 +28,6 @@ export class MailService {
             message:"email is send"
         }
         } catch (error) {
-            console.error(`Failed to send invitation to ${email}`, error);
             return {
                 success:false,
                 message:`Failed to send invitation to ${email}`

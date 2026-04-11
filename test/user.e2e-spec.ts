@@ -4,7 +4,7 @@ import { INestApplication, ValidationPipe} from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { Test, TestingModule } from '@nestjs/testing';
-import { describe, it, expect, beforeEach, afterEach,  } from '@jest/globals';
+import { describe, it, expect, beforeAll, afterAll,  } from '@jest/globals';
 import { PrismaService} from '../src/prisma/prisma.service';
 import { CreateUserDto } from '../src/user/dto/create-user.dto';
 import { AppModule } from '../src/app.module';
@@ -13,7 +13,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let prisma:PrismaService
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule,
@@ -33,15 +33,33 @@ describe('AppController (e2e)', () => {
   );
     await app.init();
     prisma = moduleFixture.get<PrismaService>(PrismaService);
+await prisma.task.deleteMany()
+await prisma.project.deleteMany()
+
+await prisma.teamMember.deleteMany()
+await prisma.team.deleteMany()
+
+await prisma.companyMember.deleteMany()
+
+await prisma.company.deleteMany()
+
+await prisma.user.deleteMany()
 
   });
-  beforeEach(async()=> {
-    await prisma.user.deleteMany({})
 
-  })
-  afterEach(async()=>{
-    await prisma.user.deleteMany({})
-    await app.close()
+  afterAll(async()=>{
+await prisma.task.deleteMany()
+await prisma.project.deleteMany()
+
+await prisma.teamMember.deleteMany()
+await prisma.team.deleteMany()
+
+await prisma.companyMember.deleteMany()
+
+await prisma.company.deleteMany()
+
+await prisma.user.deleteMany()
+        await app.close()
   })
   it("prisma is defined",()=> {
     expect(prisma).toBeDefined()
@@ -49,7 +67,7 @@ describe('AppController (e2e)', () => {
   it("POST create user",async()=> {
     const createUserDto :CreateUserDto = {
       name:"mohammednabil",
-      email:"mohammed@gmail.com",
+      email:"mohammednabil123@gmail.com",
       password:"mohammed12"
     }
     const response = await request(app.getHttpServer())

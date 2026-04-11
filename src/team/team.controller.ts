@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body,  Param, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Post, Body,  Param, UseGuards, ParseUUIDPipe, HttpCode } from '@nestjs/common';
 import { TeamService } from './team.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { User } from '../company/decorators/user.decorator';
@@ -17,11 +17,12 @@ export class TeamController {
   @ApiSecurity("bearer")
   public async create(@Body() createTeamDto: CreateTeamDto,@User() user:interfaces.Payload) {
     const newTeam = await this.teamService.create(createTeamDto,user.id);
-    return newTeam
+    return {newTeam}
 
   }
 
   @Post("invite/:teamId")
+  @HttpCode(200)
   @ApiSecurity("bearer")
   public async sendInvitation(
     @Param("teamId",new ParseUUIDPipe()) teamId:string,
