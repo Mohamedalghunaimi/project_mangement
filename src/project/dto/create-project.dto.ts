@@ -3,7 +3,7 @@
 /* eslint-disable prettier/prettier */
 import { Priority, ProjectStatus } from "@prisma/client";
 import { Type } from "class-transformer";
-import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString, IsUUID, MaxLength, MinDate, MinLength } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsString, IsUUID, MaxLength, MinDate, MinLength } from "class-validator";
 
 /* eslint-disable prettier/prettier */
 export class CreateProjectDto {
@@ -11,46 +11,40 @@ export class CreateProjectDto {
     @IsString()
     @MinLength(5)
     @MaxLength(15)
-    name:string
+    name!:string
 
     @IsNotEmpty()
     @IsString()
     @MinLength(15)
-    description:string
+    description!:string
     
 
     @IsEnum(ProjectStatus)
-    status:ProjectStatus
-    
-    @IsEnum(Priority)
-    priority:Priority
+    status!:ProjectStatus
+ 
     
 
     @IsDate()
     @IsNotEmpty()
     @Type(()=>Date)
     @MinDate(new Date())
-    startDate:Date
+    startDate!:Date
 
     @IsDate()
     @IsNotEmpty()
     @Type(()=>Date)
     @MinDate(new Date())
-    endDate:Date
+    endDate!:Date
 
-    @IsString()
-    @IsNotEmpty()
-    @IsEmail()
-    projectHead:string
 
     @IsString()
     @IsNotEmpty()
     @IsUUID()
-    teamId:string
+    teamId!:string
 
     @IsString()
     @IsNotEmpty()
     @IsUUID()
-    companyId:string
+    companyId!:string
 
 }

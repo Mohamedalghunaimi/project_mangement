@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable prettier/prettier */
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -14,17 +14,17 @@ export class ProjectService {
 
     const [team,company,project] = await Promise.all([
       this.prisma.team.findUnique({where:{id:teamId}}),
-      this.prisma.company.findUnique({where:{id:companyId},select:{companyMembers:{select:{userId:true,role:true}}}}),
+      this.prisma.company.findUnique({where:{id:companyId},select:{id:true,companyMembers:{select:{userId:true,role:true}}}}),
       this.prisma.project.findUnique({where:{name_teamId:{name,teamId}}})
     ])
 
     if(!team) {
-      throw new BadRequestException("Team does not exists")
+      throw new NotFoundException("Team does not exists")
     }
     if(!company) {
-      throw new BadRequestException("Company does not exist")
+      throw new NotFoundException("Company does not exist")
     }
-    if(team.companyId!==companyId) {
+    if(team.companyId!==company.id) {
       throw new BadRequestException("Team does not belong to this company")
     }
 
