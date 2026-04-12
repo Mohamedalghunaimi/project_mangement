@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
@@ -49,7 +49,11 @@ export class UserService {
         accessToken
       }
     } catch (error:any) {
-      throw new InternalServerErrorException(error.message)
+      if(error instanceof HttpException) {
+        throw error
+      }
+      console.error(error)
+      throw new InternalServerErrorException("some thing went wrong in server")
 
       
     }

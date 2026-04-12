@@ -59,7 +59,8 @@ await prisma.companyMember.deleteMany()
 await prisma.company.deleteMany()
 
 await prisma.user.deleteMany()
-        await app.close()
+await app.close()
+await prisma.$disconnect()
   })
   it("prisma is defined",()=> {
     expect(prisma).toBeDefined()

@@ -10,6 +10,7 @@ import { GoogleGuard } from './gurards/google.guard';
 import { Payload } from 'utils/interfaces';
 import { TeamService } from '../team/team.service';
 import { User } from '@prisma/client';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -19,6 +20,7 @@ export class UserController {
   ) {}
 
   @Post("auth/register")
+  @ApiBody({type:CreateUserDto})
   public async create(@Body() createUserDto: CreateUserDto) {
     
     const result = await this.userService.create(createUserDto);
@@ -26,6 +28,12 @@ export class UserController {
   }
 
   @Post("auth/login")
+  @ApiBody({schema:{
+    example:{
+      email:"mohammed@gmail",
+      password:"123456785"
+    }
+  }})
   @UseGuards(LocalGuard)
   @HttpCode(200)
   public async login(@Req() req:express.Request) {

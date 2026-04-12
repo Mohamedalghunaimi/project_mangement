@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable prettier/prettier */
-import { BadRequestException, ForbiddenException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable,  NotFoundException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -61,7 +61,7 @@ export class ProjectService {
    
     })
     if(!company) {
-      throw new BadRequestException('Company does not exist')
+      throw new NotFoundException('Company does not exist')
     }
 
     const projects = await this.prisma.project.findMany({
@@ -120,7 +120,7 @@ export class ProjectService {
       }
     });
     if(!project) {
-      throw new BadRequestException('project not exists')
+      throw new NotFoundException('project not exists')
     }
     return project
 
@@ -129,11 +129,11 @@ export class ProjectService {
 
 
   public async update(id: string, updateProjectDto: UpdateProjectDto,userId:string) {
-    const [project,user] = await Promise.all(
-      [
-        this.prisma.project.findUnique({
+      
+        const project = await this.prisma.project.findUnique({
           where:{id},
-          include:{
+          select:{
+            id:true,
             team:{
               select:{
                 teamMembers:{
@@ -145,16 +145,13 @@ export class ProjectService {
               }
             }
           }
-        }),
-        this.prisma.user.findUnique({where:{id:userId}})
-      ]
-    )
+        })
+      
+    
     if(!project) {
-      throw new BadRequestException('Project dose not exist');
+      throw new NotFoundException('Project dose not exist');
     }
-    if(!user) {
-      throw new BadRequestException('User dose not exist');
-    }
+
     const projectTeamMembers = project.team.teamMembers;
     const memberIsExist = projectTeamMembers.find((member)=>member.userId=== userId)
     if(!memberIsExist) {
@@ -166,7 +163,7 @@ export class ProjectService {
 
     const updatedProject = await this.prisma.project.update({
       where:{
-        id
+        id:project.id
       },
       data:{
         ...updateProjectDto
@@ -180,9 +177,8 @@ export class ProjectService {
   }
 
   public async remove(id: string,userId:string) {
-    const [project,user] = await Promise.all(
-      [
-        this.prisma.project.findUnique({
+      
+        const project = await this.prisma.project.findUnique({
           where:{id},
           include:{
             team:{
@@ -199,16 +195,11 @@ export class ProjectService {
               }
             }
           }
-        }),
-        this.prisma.user.findUnique({where:{id:userId}})
-      ]
-    )
+        })
     if(!project) {
-      throw new BadRequestException("project dose not exist")
+      throw new NotFoundException("project dose not exist")
     }
-    if(!user) {
-      throw new BadRequestException("user dose not exist")
-    }
+
     const projectTeamMembers = project.team.teamMembers;
     const memberIsExist = projectTeamMembers.find((member)=>member.userId=== userId)
     if(project.creatorId !== userId && memberIsExist?.role !=='OWNER' ) {

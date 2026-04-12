@@ -77,6 +77,8 @@ await prisma.company.deleteMany()
 await prisma.user.deleteMany()
 
         await app.close()
+await prisma.$disconnect()
+
     })
 
 

@@ -62,18 +62,6 @@ let createTaskDto:CreateTaskDto
     await prisma.team.deleteMany({})
     await prisma.company.deleteMany({})
     await prisma.user.deleteMany({})
-
-    });
-    afterEach(async()=>{
-        await prisma.task.deleteMany({})
-        await prisma.project.deleteMany({})
-        await prisma.teamMember.deleteMany({})
-        await prisma.companyMember.deleteMany({})
-        await prisma.team.deleteMany({})
-        await prisma.company.deleteMany({})
-        await prisma.user.deleteMany({})
-
-        await app.close()
             leader = await prisma.user.create({
                 data:{
                     email:"mohammedbb@gmail.com",
@@ -132,19 +120,34 @@ let createTaskDto:CreateTaskDto
                 status:"TODO",
                 dueDate:new Date(Date.now() + 1000*60*60*3)
             }
+    });
+    afterAll(async()=>{
+        await prisma.task.deleteMany({})
+        await prisma.project.deleteMany({})
+        await prisma.teamMember.deleteMany({})
+        await prisma.companyMember.deleteMany({})
+        await prisma.team.deleteMany({})
+        await prisma.company.deleteMany({})
+        await prisma.user.deleteMany({})
+
+        await app.close()
+await prisma.$disconnect()
+
     })
     it("prisma is defined",()=> {
         expect(prisma).toBeDefined()
     })
 
     describe("create task",()=> {
+        afterAll(async()=> {
+        await prisma.task.deleteMany({})
+        })
         it("create task with 200 status",async()=> {
 
             const createTaskResponse = await request(app.getHttpServer())
             .post(`/api/tasks/${newProject.id}`)
             .set("Authorization",`Bearer ${accessToken}`)
             .send(createTaskDto)
-            console.log(createTaskResponse.body)
             expect(createTaskResponse.status).toBe(201)
         })
         it("create task return with 401",async()=> {
@@ -153,7 +156,6 @@ let createTaskDto:CreateTaskDto
             const createTaskResponse = await request(app.getHttpServer())
             .post(`/api/tasks/${newProject.id}`)
             .send(createTaskDto)
-            console.log(createTaskResponse.body)
             expect(createTaskResponse.status).toBe(401)
             
 
@@ -291,6 +293,9 @@ let createTaskDto:CreateTaskDto
     })
 
     describe("patch to single task",()=> {
+        afterEach(async()=> {
+        await prisma.task.deleteMany({})
+        })
         it("should return with 200",async()=> {
             const newTask = await prisma.task.create({
                 data:{
@@ -376,6 +381,9 @@ let createTaskDto:CreateTaskDto
         })
     })
     describe("delete single task",()=> {
+        afterEach(async()=> {
+        await prisma.task.deleteMany({})
+        })
         it("should return with 200",async()=> {
             const newTask = await prisma.task.create({
                 data:{
