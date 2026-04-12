@@ -38,12 +38,15 @@ export class TaskController {
   }
 
   @Get('')
+  @ApiBearerAuth()
+
   public async findTasksforSingleUser(@User() user:interfaces.Payload) {
     const tasks = await this.taskService.findUserTasks(user.id)
     return tasks
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @ApiParam({name:"id",required:true})
   @ApiBody({type:UpdateTaskDto})
 
@@ -52,6 +55,8 @@ export class TaskController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+
   @ApiParam({name:"id",required:true})
   remove(@Param('id',new ParseUUIDPipe(),) id: string,@User() user:interfaces.Payload) {
     return this.taskService.remove(id,user.id);

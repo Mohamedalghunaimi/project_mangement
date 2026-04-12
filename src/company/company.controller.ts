@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe,  Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompany } from './dtos/CreateCompany.dto';
 import { JwtGuard } from '../user/gurards/jwt.guard';
@@ -43,4 +43,18 @@ export class CompanyController {
     return result ;
 
   }
+
+
+
+
+
+
+
+
+
+
+    
+
+  
+
 }

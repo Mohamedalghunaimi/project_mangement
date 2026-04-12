@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable prettier/prettier */
-import { BadRequestException, ForbiddenException, Injectable, } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable,  } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompany } from './dtos/CreateCompany.dto';
 import { TeamService } from '../team/team.service';
@@ -52,7 +52,15 @@ export class CompanyService {
                 }
             }
         })
+
         await this.teamService.create({name,companyId:createdCompany.id},userId,tx);
+        await tx.companyMember.create({
+            data:{
+                userId,
+                companyId:createdCompany.id,
+                role:"OWNER"
+            }
+        })
         return createdCompany
         })
         
@@ -124,6 +132,7 @@ export class CompanyService {
         return companyInfo
 
     }
+
 
 
 
