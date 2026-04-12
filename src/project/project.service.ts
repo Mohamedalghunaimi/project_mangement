@@ -200,9 +200,7 @@ export class ProjectService {
       throw new NotFoundException("project dose not exist")
     }
 
-    const projectTeamMembers = project.team.teamMembers;
-    const memberIsExist = projectTeamMembers.find((member)=>member.userId=== userId)
-    if(project.creatorId !== userId && memberIsExist?.role !=='OWNER' ) {
+    if(project.creatorId !== userId ) {
       throw  new ForbiddenException('forbidden')
 
     }

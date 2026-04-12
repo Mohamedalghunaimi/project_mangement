@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCompanyMemberDto } from './dto/create-company-member.dto';
-import { UpdateCompanyMemberDto } from './dto/update-company-member.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from '@prisma/client';
 

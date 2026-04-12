@@ -6,7 +6,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { JwtGuard } from '../user/gurards/jwt.guard';
 import express from 'express';
 import { Payload } from 'utils/interfaces';
-import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @Controller('project')
 @UseGuards(JwtGuard)
@@ -19,6 +19,7 @@ export class ProjectController {
   @ApiBody({
     type: CreateProjectDto,
   })
+  @ApiOperation({summary:"create a project"})
   public async create(@Body() createProjectDto: CreateProjectDto,@Req() req:express.Request) {
     const user = req.user as Payload ;
     const result = await this.projectService.create(createProjectDto,user.id );
@@ -28,6 +29,7 @@ export class ProjectController {
   @Get(":companyId")
   @ApiBearerAuth()
   @ApiParam({ name: 'companyId', type:String})
+  @ApiOperation({summary:"get all projects in the company"})
 
   public async findAll(
     @Param('companyId',new ParseUUIDPipe()) companyId:string
@@ -39,6 +41,7 @@ export class ProjectController {
   @Get('single-project/:id')
   @ApiBearerAuth()
   @ApiParam({ name: 'id', type:String,required:true})
+  @ApiOperation({summary:"get all single project"})
 
   findOne(@Param('id') id: string) {
     return this.projectService.findOne(id);
@@ -50,6 +53,8 @@ export class ProjectController {
   @ApiBody({
     type:  UpdateProjectDto,
   })
+  @ApiOperation({summary:"update project"})
+
   update(@Param('id',new ParseUUIDPipe()) id: string, @Body() updateProjectDto: UpdateProjectDto,@Req() req:express.Request) {
     const user = req.user as Payload
     return this.projectService.update(id, updateProjectDto,user.id);
@@ -58,6 +63,7 @@ export class ProjectController {
   @Delete(':id')
   @ApiBearerAuth()
   @ApiParam({ name: 'id', type:String,required:true})
+  @ApiOperation({summary:"delete project"})
 
   remove(@Param('id',new ParseUUIDPipe()) id: string,@Req() req:express.Request) {
     const user = req.user as Payload
