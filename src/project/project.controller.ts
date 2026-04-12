@@ -63,7 +63,7 @@ export class ProjectController {
   @Delete(':id')
   @ApiBearerAuth()
   @ApiParam({ name: 'id', type:String,required:true})
-  @ApiOperation({summary:"delete project"})
+  @ApiOperation({summary:"delete project by the creator"})
 
   remove(@Param('id',new ParseUUIDPipe()) id: string,@Req() req:express.Request) {
     const user = req.user as Payload

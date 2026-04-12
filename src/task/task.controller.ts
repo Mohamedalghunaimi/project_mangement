@@ -63,7 +63,7 @@ export class TaskController {
 
   @Delete(':id')
   @ApiBearerAuth()
-  @ApiOperation({summary:"remove the task by the user"})
+  @ApiOperation({summary:"remove the task by the leader"})
   @ApiParam({name:"id",required:true})
   remove(@Param('id',new ParseUUIDPipe(),) id: string,@User() user:interfaces.Payload) {
     return this.taskService.remove(id,user.id);
