@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Get,  Body, Param, Delete, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { TeamMemberService } from './team-member.service';
-import { User } from 'src/company/decorators/user.decorator';
+import { User } from '../company/decorators/user.decorator';
 import type { Payload } from 'utils/interfaces';
-import { JwtGuard } from 'src/user/gurards/jwt.guard';
+import { JwtGuard } from '../user/gurards/jwt.guard';
 import { ApiBody, ApiOperation, ApiParam } from '@nestjs/swagger';
 
 @Controller('team-member')

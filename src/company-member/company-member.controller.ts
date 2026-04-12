@@ -2,9 +2,9 @@
 import { Controller, Get, Post, Body,  Param, Delete, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { CompanyMemberService } from './company-member.service';
 import { CreateCompanyMemberDto } from './dto/create-company-member.dto';
-import { JwtGuard } from 'src/user/gurards/jwt.guard';
-import { User } from 'src/company/decorators/user.decorator';
-import type { Payload } from 'utils/interfaces';
+import { JwtGuard } from '../user/gurards/jwt.guard';
+import { User } from '../company/decorators/user.decorator';
+import type { Payload } from '../../utils/interfaces';
 import { ApiBearerAuth, ApiBody, } from '@nestjs/swagger';
 
 @Controller('company-members')
