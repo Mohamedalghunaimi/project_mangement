@@ -15,6 +15,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CompanyMemberModule } from './company-member/company-member.module';
+import { TeamMemberModule } from './team-member/team-member.module';
 
 
 @Module({
@@ -63,6 +64,7 @@ import { CompanyMemberModule } from './company-member/company-member.module';
     }),
     CloudinaryModule,
     CompanyMemberModule,
+    TeamMemberModule,
 
   ],
   controllers: [AppController],

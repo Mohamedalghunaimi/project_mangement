@@ -24,7 +24,7 @@ app.use(helmet());
   );
   const config = new DocumentBuilder()
   .setDescription('API documentation for Example project')
-  .setTitle('Example API')
+  .setTitle('project management api')
   .addServer("http://localhost:5000")
   .addTag('example')
   .setVersion("1.0")
